@@ -1,39 +1,36 @@
 import tkinter as tk
-import characters.Player as player
 
 
 class View(tk.Canvas):
 
-    DIRECTION = {"west": (6, 0),
-                 "south": (0, -6),
-                 "east": (-6, 0),
-                 "north": (0, 6)}
-
     def __init__(self, master):
-        super().__init__(master=master, width=500, height=500, bg="Skyblue")
-        self.player = player.Player(self, "Cocograal", 1000, None)
-
-        self.map = []
-        self.create_map()
-        photoImage = tk.PhotoImage(file="characters/character.png")
-        self.player_canvas = self.create_image(250, 250, image=photoImage)
-        self.map.append(photoImage)
+        super().__init__(master=master, width=1100, height=650, bg="Skyblue")
+        self.reference = []
+        # photoImage = tk.PhotoImage(file="characters/main_character.png")
+        # self.player_canvas = self.create_image(500, 300, image=photoImage)
+        # self.reference.append(photoImage)
+        self.npcs = []
         self.grid()
 
         self.moving = None
 
-    def create_map(self):
+    def initialise_game(self, npcs, player):
         image = tk.PhotoImage(file="maps/road.png") # TO DO --> mettre le chemin en paramètre pour les différentes maps
-        self.create_image(0, 0, image=image, tag="map")
-        self.map.append(image)
-        print("BONJOUR")
+        self.create_image(0, 800, image=image, anchor="s", tag="move")
+        self.reference.append(image)
+        print("MAP CREATED")
 
-    def update_map(self, direction):
-        print(direction)
-        move_x, move_y = self.DIRECTION[direction]
-        print(move_x, move_y)
-        self.move("map", move_x, move_y)
-        self.moving = self.master.after(75, lambda: self.update_map(direction))
+        self.create_oval(player.position.x1, player.position.y1,
+                         player.position.x2, player.position.y2, fill="black", tag="player")
 
-    def stop_updating_map(self):
-        self.master.after_cancel(self.moving)
+        for npc in npcs:
+            npc_canvas = self.create_oval(npc.position.x1, npc.position.y1,
+                                          npc.position.x2, npc.position.y2,
+                                          fill="Skyblue", tag=("move", "npc"))
+            self.npcs.append(npc_canvas)
+
+    def update_view(self, x, y):
+        """
+        Moves the map so there is an illusion that it is the character that is currently moving.
+        """
+        self.move("move", x, y)

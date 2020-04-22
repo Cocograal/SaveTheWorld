@@ -1,5 +1,8 @@
 import tkinter as tk
 import view.gui as gui
+import game
+
+
 
 class Control(tk.Tk):
 
@@ -11,6 +14,7 @@ class Control(tk.Tk):
     def __init__(self):
         super().__init__()
         self.view = gui.View(self)
+        self.game = game.Game(self, self.view)
 
         self.already_moving = False
         self.key_pressed = None
@@ -19,7 +23,7 @@ class Control(tk.Tk):
 
     def key_press(self, event):
         if event.keysym in self.DIRECTION and not self.already_moving:
-            self.view.update_map(self.DIRECTION[event.keysym])
+            self.game.update(self.DIRECTION[event.keysym])
             self.key_pressed = event.keysym
             self.already_moving = True
             print("PRESSED")
@@ -28,5 +32,7 @@ class Control(tk.Tk):
         if event.keysym == self.key_pressed:
             self.key_pressed = None
             self.already_moving = False
-            self.view.stop_updating_map()
+            self.game.stop_updating()
             print("RELEASED")
+        elif event.keysym == "Return":
+            self.game.interaction()
