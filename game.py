@@ -16,25 +16,24 @@ class Game():
         self.master = master
         self.view = view
         self.npcs = self.initialise_npc()
-        self.player = main_character.MainCharacter(self, self.view, "Cocograal", 1000, None)
+        self.player = main_character.MainCharacter(self, self.view, "characters/players.txt")
 
         self.view.initialise_game(self.npcs, self.player)
         self.moving = None
 
     def initialise_npc(self):
         npcs = []
-        for traits in self.NPC_TRAITS.values():
-            traits_list = traits.split(", ")
-            npc_initialised = npc.Npc(self, self.view, traits_list[0],
-                                      int(traits_list[1]), traits_list[2],
-                                      vector.Vector2f(int(traits_list[3]), int(traits_list[4]),
-                                                      int(traits_list[5]), int(traits_list[6])))
+        with open("characters/npc_traits.txt") as file:
+            data = file.read()
+        data_per_line = data.split("\n")
+        for npc_link in data_per_line:
+            npc_initialised = npc.Npc(self, self.view, npc_link)
             npcs.append(npc_initialised)
         return npcs
 
     def interaction(self):
         for npc in self.npcs:
-            if npc.is_player_around():
+            if npc.is_player_around() and not npc.already_conversing:
                 npc.converse()
                 break
 
@@ -42,11 +41,14 @@ class Game():
         move_x, move_y = self.DIRECTION[direction]
         arrival = self.view.find_overlapping(self.player.position.x1 - move_x, self.player.position.y1 - move_y,
                                              self.player.position.x2 - move_x, self.player.position.y2 - move_y)
+        print(len(arrival))
+
         if len(arrival) < 3:
             self.view.update_view(move_x, move_y)
             for npc in self.npcs:
                 npc.update_position(direction)
-        self.moving = self.master.after(75, lambda: self.update(direction))
+            print(npc.position)
+        self.moving = self.master.after(2, lambda: self.update(direction))
 
     def stop_updating(self):
         self.master.after_cancel(self.moving)

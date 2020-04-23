@@ -1,0 +1,3 @@
+Jack; 50; slime; 600; 305; 640; 345; 
+Bienvenue dans Save The World! Pour ta premiere mission, il faut que tu attrapes un slime!
+Reviens me voir quand tu as reussi.

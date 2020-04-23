@@ -8,10 +8,9 @@ class Npc(player.Player):
                  "east": (-6, 0),
                  "north": (0, 6)}
 
-    def __init__(self, master, view, name, money, monsters, position):
-        super().__init__(master, view, name, money, monsters)
-        self.position = position
-        self.msg = "BONJOUR"
+    def __init__(self, master, view, npc_link):
+        super().__init__(master, view, npc_link)
+        self.already_conversing = False
 
     def __str__(self):
         return "NPC"
@@ -24,9 +23,13 @@ class Npc(player.Player):
         return False
 
     def converse(self):
-        print(self.msg)
+        self.already_conversing = True
+        self.view.display_conversation(self)
+
+    def get_msg(self, msg_number):
+        msg = self.msgs[msg_number]
+        return msg
 
     def update_position(self, direction):
         move_x, move_y = self.DIRECTION[direction]
         self.position += vector.Vector2f(move_x, move_y, move_x, move_y)
-        print(self.position)
