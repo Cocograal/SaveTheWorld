@@ -3,8 +3,8 @@ import util.vector as vector
 
 class Player():
 
-    def __init__(self, master, view, file_link):
-        self.master = master
+    def __init__(self, game_control_board, view, file_link):
+        self.game_control_board = game_control_board
         self.view = view
         self.name, self.money, self.monsters, self.position, self.msgs = self.split_informations(file_link)
 

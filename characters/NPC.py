@@ -8,8 +8,8 @@ class Npc(player.Player):
                  "east": (-6, 0),
                  "north": (0, 6)}
 
-    def __init__(self, master, view, npc_link):
-        super().__init__(master, view, npc_link)
+    def __init__(self, game_control_board, view, npc_link):
+        super().__init__(game_control_board, view, npc_link)
         self.already_conversing = False
 
     def __str__(self):
@@ -25,6 +25,7 @@ class Npc(player.Player):
     def converse(self):
         self.already_conversing = True
         self.view.display_conversation(self)
+        self.game_control_board.start_mission(["slime", 10])
 
     def get_msg(self, msg_number):
         msg = self.msgs[msg_number]

@@ -1,4 +1,5 @@
 import tkinter as tk
+import util.vector as vector
 
 
 class View(tk.Canvas):
@@ -12,23 +13,19 @@ class View(tk.Canvas):
         # self.player_canvas = self.create_image(500, 300, image=photoImage)
         # self.reference.append(photoImage)
         self.npcs = []
-        self.grid()
-
+        self.grid(row=0, column=0, columnspan=2)
+        self.borders = vector.Vector2f(self.WIDTH/2 - 1240, self.HEIGHT - 3508, self.WIDTH/2 + 1240, self.HEIGHT)
         self.moving = None
 
     def initialise_game(self, npcs, player):
         image = tk.PhotoImage(file="maps/road.png") # TO DO --> mettre le chemin en paramètre pour les différentes maps
         self.create_image(self.WIDTH/2, self.HEIGHT, image=image, anchor="s", tag="move")
         self.reference.append(image)
-        left = self.WIDTH/2 - 1240
-        right = self.WIDTH/2 + 1240
-        top = self.HEIGHT - 3508
-        bottom = self.HEIGHT
-        self.create_line(left, top, right, top, fill="white", tag="move")
+        self.create_line(self.borders.x1, self.borders.y1, self.borders.x2, self.borders.y1, fill="white", tag="move")
 
-        self.create_line(left,bottom, right, bottom, fill="white", tag="move")
-        self.create_line(left, top, left, bottom, fill="white", tag="move")
-        self.create_line(right, top, right, bottom, fill="white", tag="move")
+        self.create_line(self.borders.x1, self.borders.y2, self.borders.x2, self.borders.y2, fill="white", tag="move")
+        self.create_line(self.borders.x1, self.borders.y1, self.borders.x1, self.borders.y2, fill="white", tag="move")
+        self.create_line(self.borders.x2, self.borders.y1, self.borders.x2, self.borders.y2, fill="white", tag="move")
         print("MAP CREATED")
 
         self.create_oval(player.position.x1, player.position.y1,
@@ -39,6 +36,9 @@ class View(tk.Canvas):
                                           npc.position.x2, npc.position.y2,
                                           fill="Skyblue", tag=("move", "npc"))
             self.npcs.append(npc_canvas)
+
+    def initialise_monsters(self, position):
+        self.create_oval(position.x1, position.y1, position.x2, position.y2, fill="white", tag=("monster", "move"))
 
     def display_conversation(self, npc):
         self.create_rectangle(0, self.HEIGHT - self.HEIGHT/5, self.WIDTH, self.HEIGHT,
@@ -69,8 +69,13 @@ class View(tk.Canvas):
         npc.already_conversing = False
         self.unbind("<1>")
 
+    def delete_object(self, position):
+        widgets_at_position = self.find_overlapping(position.x1, position.y1, position.x2, position.y2)
+        self.delete(widgets_at_position[-1])
+
     def update_view(self, x, y):
         """
         Moves the map so there is an illusion that it is the character that is currently moving.
         """
         self.move("move", x, y)
+        self.borders += vector.Vector2f(x, y, x, y)
