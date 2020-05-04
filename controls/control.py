@@ -16,17 +16,13 @@ class Control(tk.Tk):
         super().__init__()
         self.view = gui.View(self)
         self.game = game.Game(self, self.view)
-        self.options = options.Option(self, self.game, self.view)
+        self.menu = options.MenuOptions(self, self.game, self.view)
+        self.config(menu=self.menu)
 
         self.already_moving = False
         self.key_pressed = None
         self.bind("<KeyPress>", lambda event: self.key_press(event))
         self.bind("<KeyRelease>", lambda event: self.key_release(event))
-
-        self.entry = tk.Entry()
-        self.entry.grid(row=1, column=0)
-        self.label = tk.Label(text=self.game.movement_time)
-        self.label.grid(row=1, column=1)
 
     def key_press(self, event):
         if event.keysym in self.DIRECTION and not self.already_moving:
@@ -41,7 +37,6 @@ class Control(tk.Tk):
             self.game.stop_updating()
         elif event.keysym == "space":
             self.game.interaction()
-        elif event.keysym == "Return":
-            time = self.entry.get()
-            self.options.change_movement_speed(time)
-            self.entry.delete(0)
+
+    def get_entry_text(self, text):
+        self.menu.change_movement_speed(text)

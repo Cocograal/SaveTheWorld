@@ -16,6 +16,7 @@ class View(tk.Canvas):
         self.grid(row=0, column=0, columnspan=2)
         self.borders = vector.Vector2f(self.WIDTH/2 - 1240, self.HEIGHT - 3508, self.WIDTH/2 + 1240, self.HEIGHT)
         self.moving = None
+        self.menu = False
 
     def initialise_game(self, npcs, player):
         image = tk.PhotoImage(file="maps/road.png") # TO DO --> mettre le chemin en paramètre pour les différentes maps
@@ -39,6 +40,16 @@ class View(tk.Canvas):
 
     def initialise_monsters(self, position):
         self.create_oval(position.x1, position.y1, position.x2, position.y2, fill="white", tag=("monster", "move"))
+
+    def open_menu(self, master):
+        self.menu = True
+        self.create_rectangle(self.WIDTH/4, self.HEIGHT/4, self.WIDTH*3/4, self.HEIGHT*3/4, fill="black", tag="menu")
+        entry = tk.Entry(self)
+        self.create_window(self.WIDTH/2, self.HEIGHT/3, window=entry, tag="menu")
+        btn = tk.Button(self, text="close menu")
+        self.create_window(self.WIDTH/2, self.HEIGHT/2, window=btn, tag="menu")
+        btn.bind("<1>", lambda _: self.delete("menu"))
+        self.master.bind("<Return>", lambda _: self.master.get_entry_text(entry.get()))
 
     def display_conversation(self, npc):
         self.create_rectangle(0, self.HEIGHT - self.HEIGHT/5, self.WIDTH, self.HEIGHT,
